@@ -1,0 +1,1321 @@
+<!DOCTYPE html5>
+<html>
+  <head>
+    <title>InstaVine</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <!-- ========================================== -->
+    <!--  Application template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars">
+      <div id="wrap">
+        <!-- Fixed navigation bar -->
+        <div class="navbar navbar-default navbar-fixed-top">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              {{#link-to "index" classNames="navbar-brand"}}InstaVine</a>{{/link-to}}
+            </div> <!-- /.navbar-header -->
+
+            <div class="navbar-collapse collapse">
+
+              <!-- Left nav items -->
+              <ul class="nav navbar-nav">
+                {{#link-to 'newest' tagName='li'}}<a href="#">Newest</a>{{/link-to}}
+                {{#link-to 'top' tagName='li'}}<a href="#">Top</a>{{/link-to}}
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    Tags <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    {{#each tag in App.tags}}
+                      <li>{{#link-to 'tags' tag.name}}{{tag.name}}{{/link-to}}</li>
+                    {{/each}}
+                  </ul>
+                </li>
+                {{#link-to 'test' tagName='li'}}<a href="#">Test</a>{{/link-to}}
+              </ul> <!-- /.nav navbar-nav -->
+
+              <!-- Right nav items -->
+              <ul class="nav navbar-nav navbar-right">
+                {{#unless App.user}}
+                  <li>{{#link-to "register"}} No account? Sign up! {{/link-to}}</li>
+                  <li><a href="#" {{action do_modal 'login_modal'}}> Login </a></li>
+                {{else}}
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                      {{App.user.username}}
+                      <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                      {{#link-to 'user.settings' tagName='li'}}<a href="#">Settings</a>{{/link-to}}
+                      {{#link-to 'admin' tagName='li'}}<a href="#">Administration</a>{{/link-to}}
+                      <li class="divider"></li>
+                      <li><a href="#" {{action 'logout'}}>Log Out</a></li>
+                    </ul>
+                  </li>
+                {{/unless}}
+              </ul> <!-- /.nav navbar-nav navbar-right -->
+
+            </div>
+          </div>
+        </div> <!-- /.navbar navbar-default navbar-fixed-top -->
+
+        <div class="container">
+          {{outlet modal}}
+          <!-- Main content -->
+          {{outlet}}
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div id="footer">
+        <div class="container">
+          <div class="navbar-collapse collapse">
+            
+            <!-- Left footer items -->
+            <ul class="nav navbar-nav">
+              <li id="copyright">© 2013 InstaVine</li>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Help</a></li>
+              <li><a href="#">About us</a></li>
+            </ul>
+
+            <!-- Right footer items -->
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="#">Terms of Use</a></li>
+              <li><a href="#">Privacy</a></li>
+              <li><a href="#">Policy</a></li>
+            </ul>
+
+          </div>
+        </div>
+      </div> <!-- /.footer -->
+    </script>
+
+
+
+
+    <!-- ========================================== -->
+    <!--  (Application) Index template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="index">
+
+      <!-- Newest content items -->
+      <div class="row">
+        <div class="col-lg-4">
+          <h3>{{#link-to 'newest' classNames="index-subnav"}} Newest {{/link-to}}</h3>
+        </div>
+      </div>
+      <!-- Content item -->
+      <div class="row custom-row">
+        {{#each content in newest_content}}
+          {{view App.SingleContentView}}
+        {{/each}}
+      </div>
+
+      <!-- Top content items -->
+      <div class="row">
+        <div class="col-lg-4">
+          <h3>{{#link-to 'top' classNames="index-subnav"}}Top rated{{/link-to}}</h3>
+        </div>
+      </div>
+      <div class="row">
+        {{#each content in rated_content}}
+          {{view App.SingleContentView}}
+        {{/each}}
+      </div>
+      
+    </script>
+
+
+
+
+    <!-- ========================================== -->
+    <!--  Top template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="top">
+      <div class="row">
+        <div class="col-lg-4">
+          <h3>Top rated content</h3>
+        </div>
+      </div>
+      {{#each row in model.rows}}
+        <div class="row">
+          {{#each content in row}}
+            {{view App.SingleContentView}}
+          {{/each}}
+        </div>
+      {{/each}}
+
+      <div class="row">
+        <div class="col-xs-offset-5 col-xs-2">
+          <button type="button" class="btn btn-default" style="min-width: 100%" {{action 'load_more'}}>Load more..</button>
+        </div>
+      </div>
+    </script>
+
+
+
+
+    <!-- ========================================== -->
+    <!--  Newest template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="newest">
+      <div class="row">
+        <div class="col-lg-4">
+          <h3>Newest content</h3>
+        </div>
+      </div>
+      {{#each row in model.rows}}
+        <div class="row">
+          {{#each content in row}}
+            {{view App.SingleContentView}}            
+          {{/each}}
+        </div>
+      {{/each}}
+
+      <div class="row">
+        <div class="col-xs-offset-5 col-xs-2">
+          <button type="button" class="btn btn-default" style="min-width: 100%" {{action 'load_more'}}>Load more..</button>
+        </div>
+      </div>
+    </script>
+
+
+
+
+    <!-- ========================================== -->
+    <!--  Tags template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="tags">
+      <div class="row">
+        <div class="col-lg-4">
+          <h3>Tag: {{tag}}</h3>
+        </div>
+      </div>
+
+      {{#if has_content}}
+        {{#each row in model.rows}}
+          <div class="row">
+            {{#each content in row}}
+              {{view App.SingleContentView}}            
+            {{/each}}
+          </div>
+        {{/each}}
+
+        <div class="row">
+          <div class="col-xs-offset-5 col-xs-2">
+            <button type="button" class="btn btn-default" style="min-width: 100%" {{action 'load_more'}}>Load more..</button>
+          </div>
+        </div>
+      {{else}}
+        <div class="row">
+          <div class="col-lg-offset-4">
+          <br><br><br><br><br><br><br>          
+          <h4>URGH! There is no content you are looking for :/</h4>
+          </div>
+        </div>
+      {{/if}}
+    </script>
+
+
+
+
+    <!-- ========================================== -->
+    <!--  Login Modal template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="login_modal">
+
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" {{action close target="view"}}>×</button>
+          <h4 class="modal-title">Login</h4>
+      </div>
+
+      <div class="modal-body">
+
+          <div {{bind-attr class="error:alert error:alert-danger"}}>{{error}}</div>
+
+          <div class="row">
+            <div class="col-lg-12">
+
+              <div class="form-group">
+                <label>Username or email</label>
+                <input type="text" class="form-control" id="username" placeholder="Enter username or email">
+              </div>
+
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Password">
+              </div>
+
+              <div class="checkbox">
+                <input type="checkbox" id="remember"> Remebmer me
+              </div>
+
+            </div>
+          </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" {{action close target="view"}}>Close</button>
+        <button type="button" class="btn btn-primary" {{action login}}>Login</button>
+      </div>
+    </script>
+
+
+
+
+    <!-- ========================================== -->
+    <!--  Register template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="register">
+
+      <div class="col-xs-offset-2 col-xs-8">
+        <div class="panel panel-default">
+
+          <div class="panel-heading">Enter your information</div>
+        
+          <div class="panel-body">
+
+            {{render 'error-box'}}
+
+            <div class="form-group">
+              <label>Username</label>
+              {{input type='text' classNames='form-control' value=username placeholder='Username'}}
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              {{input type='text' classNames='form-control' value=email placeholder='Email'}}
+            </div>
+            <div class="form-group">
+              <label>Date of birth</label>
+              {{input type='date' classNames='form-control' value=dateOfBirth}}
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              {{input type='password' classNames='form-control' value=password placeholder='Password'}}
+            </div>
+            <div class="form-group">
+              <label>Repeat Password</label>
+              {{input type='password' classNames='form-control' value=password placeholder='Password'}}
+            </div>
+
+            <div class="form-inline">
+              <div class="pull-right">
+                <button type="submit" class="btn btn-primary" {{action 'sign_up' model}}>Sign up</button>
+                <button type="submit" class="btn btn-default" {{action 'go_back'}}>Cancel</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </script>
+
+
+
+
+
+    <!-- ========================================== -->
+    <!--  User template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="user">
+
+      <div class="row">
+        <div class="col-xs-2 col-xs-offset-1">
+
+          <div class="list-group">
+            {{#link-to 'user.videos' classNames="list-group-item"}}Your videos{{/link-to}}
+            {{#link-to 'user.settings' classNames="list-group-item"}}Account settings{{/link-to}}
+          </div>
+
+        </div>
+
+        <div class="col-xs-8">
+          {{outlet}}
+        </div>
+
+      </div>
+
+    </script>
+
+
+
+
+
+
+    <!-- ========================================== -->
+    <!--  User History template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="user/videos">
+
+      <div class="panel panel-default">
+        <div class="panel-heading">Your uploaded videos</div>
+    
+        <div class="panel-body">
+
+            <!-- The global progress bar -->
+            <div id="progress" class="progress">
+                <div class="progress-bar progress-bar-info"></div>
+            </div>
+
+            <span class="btn btn-success fileinput-button" style="float: left; margin-top: 20px;
+margin-right: 10;">
+                <i class="glyphicon glyphicon-plus"></i>
+                <span>Select video...</span>
+                <!-- The file input field used as target for the file upload widget -->
+                <input id="fileupload" type="file" name="file">
+            </span>
+            <div id="files" class="files" style="float: left"></div>
+
+        </div>
+      </div>
+
+    </script>
+
+
+
+
+
+    <!-- ========================================== -->
+    <!--  User Settings template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="user/settings">
+
+      <div class="panel panel-default">
+        <div class="panel-heading">Edit your settings</div>
+      
+        <div class="panel-body">
+
+            {{render 'error-box'}}
+
+            <div class="col-lg-8">
+
+            <div class="form-group">
+              <label>Email address</label>
+              {{input type="text" value=email classNames="form-control"}}
+            </div>
+            <div class="form-group">
+              <label>Date of Birth</label>
+              {{input type="date" value=dateOfBirth classNames="form-control"}}              
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Password</label>
+              <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputReEnterPassword1">Re-enter password</label>
+              <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Re-enter password">
+            </div>
+            <div class="form-inline">
+              <div class="btn pull-right">
+                <button type="submit" class="btn btn-primary" {{action 'save' model}}> Save </button>
+              </div>
+            </div>
+
+          </div>
+          
+        </div>
+      </div>
+
+    </script>
+
+
+
+
+    <!-- ========================================== -->
+    <!--  Admin template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="admin">
+      <ul class="nav nav-tabs">
+        {{#link-to 'admin.users' tagName='li'}}<a href="#">User management</a>{{/link-to}}
+        {{#link-to 'admin.groups' tagName='li'}}<a href="#">Group management</a>{{/link-to}}
+        {{#link-to 'admin.access' tagName='li'}}<a href="#">Access management</a>{{/link-to}}
+        {{#link-to 'admin.contents' tagName='li'}}<a href="#">Content management</a>{{/link-to}}
+      </ul>
+
+      <div class="panel panel-default">
+        <div class="panel-body">
+          {{outlet}}
+        </div>
+      </div>
+
+    </script>
+
+
+
+
+    <!-- ========================================== -->
+    <!--  Admin Users template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="admin/users">
+      {{outlet}}
+    </script>
+
+
+    <script type="text/x-handlebars" data-template-name="admin-user-list">
+      <table class="table table-condensed table-hover">
+        
+        <thead>
+        <tr><th>#</th><th>Last Name</th><th>First Name</th><th>Username</th><th>Email</th><th>Registered at</th><th>Action</th></tr>
+        </thead>
+        {{#each user in model.entity}} 
+          <tr>
+            <td>{{user.id}} </td>
+            <td>{{user.lastName}} </td>
+            <td>{{user.firstName}} </td>
+            <td>{{user.username}} </td>
+            <td>{{user.email}} </td>
+            <td>{{user.createdAt}} </td>
+            <td>
+              <button type="button" class="btn btn-link" {{action edit_user user}}>
+                <span class="glyphicon glyphicon-pencil"></span>
+              </button>
+               <button type="button" class="btn btn-link" {{action delete_user user}}>
+                <span class="glyphicon glyphicon-remove"></span>
+              </button>
+            </td>
+          </tr>
+        {{/each}}
+      </table>
+
+      <div class="text-center">
+        <ul class="pagination">
+          <li><a href="#">&laquo;</a></li>
+          <li><a href="#">1</a></li>
+          <li><a href="#">&raquo;</a></li>
+        </ul>
+      </div>
+
+      <button type="button" class="btn btn-primary" {{action 'show_add_user'}}>Add new user</button>
+    </script>
+
+
+    <script type="text/x-handlebars" data-template-name="admin-user-edit">
+      {{render 'error-box'}}
+      
+      <a href='#' {{action 'show_list'}}> < Back to user list </a> 
+
+      <div class="row">
+        <div class="col-xs-offset-3 col-xs-6">
+          <div class="form-group">
+            <label>Last name</label>
+            {{input type='text' classNames='form-control' value=user.lastName}}
+          </div>
+          <div class="form-group">
+            <label>First name</label>
+            {{input type='text' classNames='form-control' value=user.firstName}}
+          </div>
+          <div class="form-group">
+            <label>Username</label>
+            {{input type='text' classNames='form-control' value=user.username}}
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            {{input type='text' classNames='form-control' value=user.email}}
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            {{input type='text' classNames='form-control' value=user.phone}}
+          </div>
+          <div class="form-group">
+            <label>Date of birth</label>
+            {{input type='date' classNames='form-control' value=user.dateOfBirth}}
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            {{view Ember.Select
+                   content=App.states
+                   optionValuePath='content.id'
+                   optionLabelPath='content.name'
+                   value=user.state.id
+                   classNames='form-control'}}
+          </div>
+          <div class="form-group">
+            <label>Roles</label>
+            {{auto-suggest tags=roles selectedTags=user_roles placeholder="Pick some roles"}}
+          </div>
+          <div class="form-group">
+            <label>Groups</label>
+            {{auto-suggest tags=groups selectedTags=user_groups placeholder="Pick some groups"}}
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" {{action 'save_user' user}}>Save</button>
+        <button type="button" class="btn btn-default" {{action 'show_list'}}>Cancel</button>
+      </div>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="admin-user-add">
+      {{render 'error-box'}}
+      
+      <a href='#' {{action 'show_list'}}> < Back to user list </a> 
+
+      <div class="row">
+        <div class="col-xs-offset-3 col-xs-6">
+          <div class="form-group">
+            <label>Last name</label>
+            {{input type='text' classNames='form-control' value=user.lastName placeholder='Last name'}}
+          </div>
+          <div class="form-group">
+            <label>First name</label>
+            {{input type='text' classNames='form-control' value=user.firstName placeholder='First name'}}
+          </div>
+          <div class="form-group">
+            <label>Username</label>
+            {{input type='text' classNames='form-control' value=user.username placeholder='Username'}}
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            {{input type='text' classNames='form-control' value=user.email placeholder='Email'}}
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            {{input type='text' classNames='form-control' value=user.phone placeholder='Phone number'}}
+          </div>
+          <div class="form-group">
+            <label>Date of birth</label>
+            {{input type='date' classNames='form-control' value=user.dateOfBirth}}
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            {{view Ember.Select
+                   content=App.states
+                   optionValuePath='content.id'
+                   optionLabelPath='content.name'
+                   value=user.state
+                   classNames='form-control'}}
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            {{input type='password' classNames='form-control' value=user.password placeholder='Password'}}
+          </div>
+          <div class="form-group">
+            <label>Repeat Password</label>
+            {{input type='password' classNames='form-control' value=user.password placeholder='Password'}}
+          </div>
+          <div class="form-group">
+            <label>Roles</label>
+            {{auto-suggest tags=roles selectedTags=user_roles placeholder="Pick some roles"}}
+          </div>
+          <div class="form-group">
+            <label>Groups</label>
+            {{auto-suggest tags=groups selectedTags=user_groups placeholder="Pick some groups"}}
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" {{action 'add_user' user}}>Add</button>
+        <button type="button" class="btn btn-default" {{action 'show_list'}}>Cancel</button>
+      </div>
+    </script>
+
+
+
+    <!-- ========================================== -->
+    <!--  Admin Groups template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="admin/groups">
+      {{outlet}}
+    </script>
+
+
+    <script type="text/x-handlebars" data-template-name="admin-group-list">
+      <table class="table table-condensed table-hover">
+        
+        <thead>
+          <tr><th>#</th><th>Group Name</th><th>Description</th><th>Created at</th><th>Action</th></tr>
+        </thead>
+
+        {{#each group in model.entity}} 
+          <tr>
+            <td>{{group.id}} </td>
+            <td>{{group.name}} </td>
+            <td>{{group.description}} </td>
+            <td>{{group.createdAt}} </td>
+            <td>
+              <button type="button" class="btn btn-link" {{action 'edit_group' group}}>
+                <span class="glyphicon glyphicon-pencil"></span>
+              </button>
+               <button type="button" class="btn btn-link" {{action 'delete_group' group}}>
+                <span class="glyphicon glyphicon-remove"></span>
+              </button>
+            </td>
+          </tr>
+        {{/each}}
+      </table>
+
+      <div class="text-center">
+        <ul class="pagination">
+          <li><a href="#">&laquo;</a></li>
+          <li><a href="#">1</a></li>
+          <li><a href="#">&raquo;</a></li>
+        </ul>
+      </div>
+
+      <button type="button" class="btn btn-primary" {{action 'show_add_group'}}>Add new group</button>
+    </script>
+
+
+    <script type="text/x-handlebars" data-template-name="admin-group-edit">
+      {{render 'error-box'}}
+      
+      <a href='#' {{action 'show_list'}}> < Back to group list </a> 
+
+      <div class="row">
+        <div class="col-xs-offset-3 col-xs-6">
+          <div class="form-group">
+            <label>Group name</label>
+            {{input type='text' classNames='form-control' value=group.name}}
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            {{textarea type='text' classNames='form-control' value=group.description}}
+          </div>
+          <div class="form-group">
+            <label>Roles</label>
+            {{auto-suggest tags=roles selectedTags=group_roles placeholder="Pick some roles"}}
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" {{action 'save_group' group}}>Save</button>
+        <button type="button" class="btn btn-default" {{action 'show_list'}}>Cancel</button>
+      </div>
+    </script>
+
+
+    <script type="text/x-handlebars" data-template-name="admin-group-add">
+      {{render 'error-box'}}
+      
+      <a href='#' {{action 'show_list'}}> < Back to group list </a> 
+
+      <div class="row">
+        <div class="col-xs-offset-3 col-xs-6">
+          <div class="form-group">
+            <label>Group name</label>
+            {{input type='text' classNames='form-control' value=group.name placeholder='Group name'}}
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            {{textarea type='text' classNames='form-control' value=group.description placeholder='Short group description.'}}
+          </div>
+          <div class="form-group">
+            <label>Roles</label>
+            {{auto-suggest tags=roles selectedTags=group_roles placeholder="Pick some roles"}}
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" {{action 'add_group' group}}>Add</button>
+        <button type="button" class="btn btn-default" {{action 'show_list'}}>Cancel</button>
+      </div>
+    </script>
+
+
+
+
+    <!-- ========================================== -->
+    <!--  Admin Access template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="admin/access">
+      {{outlet}}
+    </script>
+
+
+    <script type="text/x-handlebars" data-template-name="admin-access-list">
+      <table class="table table-condensed table-hover">
+        
+        <thead>
+        <tr><th>#</th><th>Role</th><th>Role desc.</th><th>Privilege type</th><th>Allowed</th><th>Resource</th><th>Action</th></tr>
+        </thead>
+        {{#each role in model}} 
+          {{#each privilege in role.privileges}}
+
+            <tr>
+              <td>{{role.id}} </td>
+              <td>{{role.name}} </td>
+              <td>{{role.description}} </td>
+              <td>{{privilege.privilegeType.name}} </td>
+              <td>{{privilege.allowed}} </td>
+              <td>{{privilege.resource.name}} </td>
+
+              <td>
+                 <button type="button" class="btn btn-link" {{action 'delete_priv' privilege}}>
+                  <span class="glyphicon glyphicon-remove"></span>
+                </button>
+              </td>
+            </tr>
+
+          {{/each}}
+        {{/each}}
+      </table>
+
+      <div class="text-center">
+        <ul class="pagination">
+          <li><a href="#">&laquo;</a></li>
+          <li><a href="#">1</a></li>
+          <li><a href="#">&raquo;</a></li>
+        </ul>
+      </div>
+
+      <button type="button" class="btn btn-primary" {{action 'show_add_privilege'}}>Add new privilege</button>
+    </script>
+
+
+    <script type="text/x-handlebars" data-template-name="admin-access-add">
+      {{render 'error-box'}}
+      
+      <a href='#' {{action 'show_list'}}> < Back to privilege list </a> 
+
+      <div class="row">
+        <div class="col-xs-offset-3 col-xs-6">
+          <div class="form-group">
+            <label>Last name</label>
+            {{input type='text' classNames='form-control' value=user.lastName placeholder='Last name'}}
+          </div>
+          <div class="form-group">
+            <label>First name</label>
+            {{input type='text' classNames='form-control' value=user.firstName placeholder='First name'}}
+          </div>
+          <div class="form-group">
+            <label>Username</label>
+            {{input type='text' classNames='form-control' value=user.username placeholder='Username'}}
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            {{input type='text' classNames='form-control' value=user.email placeholder='Email'}}
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            {{input type='text' classNames='form-control' value=user.phone placeholder='Phone number'}}
+          </div>
+          <div class="form-group">
+            <label>Date of birth</label>
+            {{input type='date' classNames='form-control' value=user.dateOfBirth}}
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            {{view Ember.Select
+                   content=App.states
+                   optionValuePath='content.id'
+                   optionLabelPath='content.name'
+                   value=user.state
+                   classNames='form-control'}}
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            {{input type='password' classNames='form-control' value=user.password placeholder='Password'}}
+          </div>
+          <div class="form-group">
+            <label>Repeat Password</label>
+            {{input type='password' classNames='form-control' value=user.password placeholder='Password'}}
+          </div>
+          <div class="form-group">
+            <label>Roles</label>
+            {{auto-suggest tags=roles selectedTags=user_roles placeholder="Pick some roles"}}
+          </div>
+          <div class="form-group">
+            <label>Groups</label>
+            {{auto-suggest tags=groups selectedTags=user_groups placeholder="Pick some groups"}}
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" {{action 'add_user' user}}>Add</button>
+        <button type="button" class="btn btn-default" {{action 'show_list'}}>Cancel</button>
+      </div>
+    </script>
+
+
+
+
+    <!-- ========================================== -->
+    <!--  Admin Contents template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="admin/contents">
+      {{outlet}}
+    </script>
+
+
+    <script type="text/x-handlebars" data-template-name="admin-contents-list">
+      <table class="table table-condensed table-hover">
+        
+        <thead>
+        <tr><th>#</th><th>Title</th><th>Year</th><th>Length</th><th>Created at</th><th>Action</th></tr>
+        </thead>
+        {{#each content in model.entity}} 
+          <tr>
+            <td>{{content.id}} </td>
+            <td>{{content.title}} </td>
+            <td>{{content.year}} </td>
+            <td>{{content.length}}</td>
+            <td>{{content.createdAt}} </td>
+            <td>
+              <button type="button" class="btn btn-link" {{action edit_content content}}>
+                <span class="glyphicon glyphicon-pencil"></span>
+              </button>
+               <button type="button" class="btn btn-link" {{action delete_content content}}>
+                <span class="glyphicon glyphicon-remove"></span>
+              </button>
+            </td>
+          </tr>
+        {{/each}}
+      </table>
+
+      <div class="text-center">
+        <ul class="pagination">
+          <li><a href="#">&laquo;</a></li>
+          <li><a href="#">1</a></li>
+          <li><a href="#">&raquo;</a></li>
+        </ul>
+      </div>
+
+      <button type="button" class="btn btn-primary" {{action 'show_add_content'}}>Add new content</button>
+    </script>
+
+
+    <script type="text/x-handlebars" data-template-name="admin-content-edit">
+      {{render 'error-box'}}
+      
+      <a href='#' {{action 'show_list'}}> < Back to content list </a> 
+      
+      <div class="row">
+            <div class="col-xs-offset-3 col-xs-6">
+
+              <div class="form-group">
+                <label>Title</label>
+                {{input type="text" classNames="form-control" placeholder="Title" value=content1.title}}
+              </div>
+
+              <div class="form-group">
+                <label>Description</label>
+                {{textarea type="text" rows="8" classNames="form-control" placeholder="Description" value=content1.description}}
+              </div>
+
+              <div class="form-group">
+                <label>Director</label>
+                {{input type="text" classNames="form-control" placeholder="Director" value=content1.director}}
+              </div>
+
+              <div class="form-group">
+                <label>Actors</label>
+                {{input type="text" classNames="form-control" placeholder="Actors" value=content1.actors}}
+              </div>
+
+              <div class="form-group">
+                <label>Year</label>
+                {{input type="text" classNames="form-control" placeholder="YYYY" value=content1.year}}
+              </div>
+
+              <div class="form-group">
+                <label>Length (in minutes)</label>
+                {{input type="text" classNames="form-control" placeholder="Length" value=content1.length}}
+              </div>
+              
+              <div class="form-group">
+                <label>Tags</label>
+                {{auto-suggest tags=tags selectedTags=content_tags placeholder="Pick some tags"}}
+              </div>
+
+            </div>
+          </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" {{action 'save_content' content1}}>Save</button>
+        <button type="button" class="btn btn-default" {{action 'show_list'}}>Cancel</button>
+      </div>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="admin-content-add">
+      {{render 'error-box'}}
+      
+      <a href='#' {{action 'show_list'}}> < Back to content list </a> 
+      
+      <br>
+      <div class="row">
+            <div class="col-xs-offset-3 col-xs-6">
+
+             <div class="form-group">
+                <label>Title</label>
+                {{input type="text" classNames="form-control" placeholder="Title" value=content1.title}}
+              </div>
+
+              <div class="form-group">
+                <label>Description</label>
+                {{textarea type="text" rows="8" classNames="form-control" placeholder="Description" value=content1.description}}
+              </div>
+
+              <div class="form-group">
+                <label>Director</label>
+                {{input type="text" classNames="form-control" placeholder="Director" value=content1.director}}
+              </div>
+
+              <div class="form-group">
+                <label>Actors</label>
+                {{input type="text" classNames="form-control" placeholder="Actors" value=content1.actors}}
+              </div>
+
+              <div class="form-group">
+                <label>Year</label>
+                {{input type="text" classNames="form-control" placeholder="YYYY" value=content1.year}}
+              </div>
+
+              <div class="form-group">
+                <label>Length (in minutes)</label>
+                {{input type="text" classNames="form-control" placeholder="Length" value=content1.length}}
+              </div>
+              
+              <div class="form-group">
+                <label>Tags</label>
+                {{auto-suggest tags=tags selectedTags=content_tags placeholder="Pick some tags"}}
+              </div>
+            </div>
+          </div>
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" {{action 'add_content' content1}}>Add</button>
+        <button type="button" class="btn btn-default" {{action 'show_list'}}>Cancel</button>
+      </div>
+    </script>
+
+
+
+  
+
+
+
+    <!-- ========================================== -->
+    <!--  Content template -->
+    <!-- ========================================== -->
+    
+    <script type="text/x-handlebars" data-template-name="content">
+      <div class="container col-xs-offset-1">
+        <h3>{{title}} ({{year}})</h3>
+
+        <div class="row">
+          <div class="col-xs-10"> 
+            {{outlet}}
+
+            {{render 'comments'}}
+
+          </div>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="content/index">
+      {{#each tag in tags}}
+        {{#link-to 'tags' tag.name}}
+          <span class="label label-default tag">{{tag.name}}</span>
+        {{/link-to}}
+      {{/each}}
+
+      <h4>Movie info</h4>        
+      <p>{{description}}</p>
+
+
+      <p><h4>Director</h4> {{director}}</p>
+
+      <p><h4>Actors</h4> {{actors}}</p>
+
+      <p><h4>Length</h4> {{length}} minutes</p>
+
+      <p><h4>Rating ({{score}}/5)</h4></p>
+
+      {{#if App.isLoggedIn}}
+        <div class="rating" {{bind-attr data-score=score data-content=id}}>
+        </div>
+      {{/if}}
+
+      {{#if App.isLoggedIn}}
+        <div class="pull-right">
+            {{#link-to 'content.watch' content classNames='btn btn-default' tagName="button"}}
+              <span class="glyphicon glyphicon-eye-open"></span> &nbsp;Watch now
+            {{/link-to}}
+            
+            {{#link-to 'content.theater' content classNames='btn btn-default' tagName="button"}}
+              <span class="glyphicon glyphicon-facetime-video"></span> &nbsp;Watch in theater
+            {{/link-to}}
+            
+            <button class="btn btn-default">
+              <span class="glyphicon glyphicon-bookmark"></span> &nbsp;Share
+            </button>
+        </div>
+      {{/if}}
+
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="content/watch">
+      Length: {{length}} minutes
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div id="hasvideo">
+            <video id="video" controls width="100%">
+              <source id='mp4' {{bind-attr src=movieSource}} type='video/mp4; codecs="avc1, mp4a"'>
+              <p>Your user agent does not support the HTML5 Video element.</p>
+            </video>
+            <div id="footnote-container"></div>
+            <div id="map-container"></div>
+            <div id="iframe-container"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </script>
+
+
+
+    <!-- ========================================== -->
+    <!--  Comments template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="comments">
+
+      {{#if App.isLoggedIn}}
+        <h3>Leave a comment</h3>
+
+      <div class="form-group">
+        <textarea class="form-control" placeholder="Comment" rows="3" id="comment"></textarea>
+      </div>
+      <div class="form-group col-xs-offset-10">
+        <button type="button" class="btn btn-primary" style="width: 100%" {{action 'comment'}}>Post</button>
+      </div>
+      {{else}}
+        <h3>Comments</h3>
+      {{/if}}
+
+      {{#each comment in reverseComments}}
+        <div class="media">
+          <img class="pull-left media-object" src="images/user-icon.png" alt="User Icon">
+
+          <div class="media-body">
+            <h4 class="media-heading">{{comment.user.firstName}} {{comment.user.lastName}}</h4>
+            {{comment.text}}
+          </div>
+        </div>
+      {{/each}}
+
+      <br>
+      <div class="form-group col-xs-offset-5 col-xs-2">
+        <button type="button" class="btn btn-default" style="min-width: 100%" {{action 'load_more'}} {{bind-attr disabled='noMoreComments'}}>
+          {{#unless noMoreComments}}Load more..
+          {{else}}No more comments.
+          {{/unless}}
+        </button>
+      </div>
+    </script>
+
+
+
+    <!-- ========================================== -->
+    <!--  New Content Modal template -->
+    <!-- ========================================== -->
+
+    <script type="text/x-handlebars" data-template-name="new_content_modal">
+
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" {{action close target="view"}}>×</button>
+          <h4 class="modal-title">New Content</h4>
+      </div>
+
+      <div class="modal-body">
+
+          <div {{bind-attr class="error:alert error:alert-danger"}}>{{error}}</div>
+
+          <div class="row">
+            <div class="col-lg-12">
+
+              <div class="form-group">
+                <label>Title</label>
+                <input type="text" class="form-control" name="title" placeholder="Title">
+              </div>
+
+              <div class="form-group">
+                <label>Director</label>
+                <input type="text" class="form-control" name="director" placeholder="Director; Director; Director">
+              </div>
+
+              <div class="form-group">
+                <label>Actors</label>
+                <input type="text" class="form-control" name="actors" placeholder="Actor; Actor; Actor">
+              </div>
+
+              <div class="form-group">
+                <label>Year</label>
+                <input type="text" class="form-control" name="year" placeholder="YYYY">
+              </div>
+
+              <div class="form-group">
+                <label>Length (in minutes)</label>
+                <input type="text" class="form-control" name="length" placeholder="mmm">
+              </div>
+              
+              <div class="form-group">
+                <label>Tags</label>
+                {{auto-suggest tags=App.tags placeholder="Pick some tags"}}
+              </div>
+
+            </div>
+          </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" {{action close target="view"}}>Close</button>
+        <button type="button" class="btn btn-primary">Add</button>
+      </div>
+    </script>
+
+
+
+<!-- Content template -->
+    <script type="text/x-handlebars" data-template-name="single_content">
+      <div class="col-xs-4 content">
+          {{view App.CatImageView source=content.image}}
+
+        <h3 class="title">{{content.title}}</h3>
+
+        {{#each tag in content.tags}}
+          {{#link-to 'tags' tag.name}}
+            <span class="label label-default tag">{{tag.name}}</span>
+          {{/link-to}}
+        {{/each}}
+
+      </div>
+    </script>
+
+
+    <script type="text/x-handlebars" data-template-name="test">
+      <button {{action do_modal 'test_modal' }}>fewigf</button>
+
+    </script>
+
+
+    <script type="text/x-handlebars" data-template-name="test_modal">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        <p>One fine body&hellip;</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </script>
+
+    <!-- ========================================== -->
+    <!--  Heler templates template -->
+    <!-- ========================================== -->
+
+
+    <!-- Error box template -->
+    <script type="text/x-handlebars" data-template-name="error-box">
+      {{#if message}}
+        <div id="alert-danger" {{bind-attr class="message:alert isErrorMessage:alert-danger isSuccessMessage:alert-success message:fade message:in"}}>
+          {{message}}
+          <a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>
+        </div>
+      {{/if}}
+    </script>
+
+
+    <!-- Auto suggest component template -->
+    <script type="text/x-handlebars" data-template-name="components/auto-suggest">
+      <div class="input-group">
+        <div class="input-group-btn dropup">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"> {{placeholder}}&nbsp; <span class="caret"></span></button>
+          <ul class="dropdown-menu">
+            {{#if has_tags_to_select}}
+              {{#each tag in availableTags}}
+                <li><a href="#" {{action 'add_tag' tag}}>{{tag.name}}</a></li>
+              {{/each}}
+            {{else}}
+              <li class="dropdown-header">No more.</li>
+            {{/if}}
+          </ul>
+        </div>
+        <span class="form-control">
+          {{log selectedTags}}
+          {{#each tag in selectedTags}}
+            <a href="#" {{action 'remove_tag' tag}}><span class="badge">{{tag.name}} &times; </span></a>
+          {{/each}}
+        </span>
+
+      </div>
+    </script>
+
+    <!-- Bootstrap modal layout -->
+    <script type="text/x-handlebars" data-template-name="modal_layout">
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            {{yield}}
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+    </script>
+
+    <script src="js/libs/jquery-1.10.2.js"></script>
+    <script src="js/libs/bootstrap.min.js"></script>    
+    <script src="js/libs/handlebars-1.1.2.js"></script>
+    <script src="js/libs/ember-1.3.1.js"></script>
+    <script src="js/libs/popcorn-complete.min.js"></script>
+    <script src="js/libs/parsley.js"></script>
+    <script src="js/libs/jquery.dotdotdot.min.js"></script>
+    <script src="js/libs/jquery.ui.widget.js"></script>
+    <script src="js/libs/jquery.fileupload.js"></script>
+    <script src="js/libs/jquery.fileupload-process.js"></script>
+
+
+    <script src="js/libs/moment.min.js"></script>
+
+    <script src="js/app.js"></script>
+    <script src="js/helpers.js"></script>
+    <script src="js/models.js"></script>
+    <script src="js/routes.js"></script>
+    <script src="js/controllers.js"></script>
+    <script src="js/views.js"></script>
+    <script src="js/components.js"></script>
+
+  </body>
+</html>

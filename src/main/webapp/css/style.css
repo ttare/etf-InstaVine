@@ -1,0 +1,261 @@
+html,
+body {
+    height: 100%;
+}
+
+
+
+/* Navbar */
+
+.navbar .navbar-brand {
+    color: #000;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.navbar-default .navbar-nav .open .dropdown-menu > li > a {
+  color: #333;
+}
+.navbar .navbar-nav .open .dropdown-menu > li > a:hover,
+.navbar .navbar-nav .open .dropdown-menu > li > a:focus,
+.navbar .navbar-nav .open .dropdown-menu > .active > a,
+.navbar .navbar-nav .open .dropdown-menu > .active > a:hover,
+.navbar .navbar-nav .open .dropdown-menu > .active > a:focus {
+  color: #fff !important;
+  background-color: #428bca !important;
+}
+.navbar .navbar-nav .open .dropdown-menu > .disabled > a,
+.navbar .navbar-nav .open .dropdown-menu > .disabled > a:hover,
+.navbar .navbar-nav .open .dropdown-menu > .disabled > a:focus {
+  color: #999 !important;
+  background-color: transparent !important;
+}
+
+
+
+
+
+/* Content */
+
+/* Wrapper for page content to push down footer */
+#wrap {
+    min-height: 100%;
+    height: auto;
+    /* Negative indent footer by its height */
+    margin: 0px auto -60px;
+    /* Pad bottom by footer height */
+    padding: 0 0 60px;
+}
+
+#wrap > .container {
+  padding: 60px 0;
+}
+
+.row a {
+    color: #000;
+}
+
+.row a:hover {
+    color: #428bca;
+    text-decoration: none;
+}
+
+
+/* Single content */
+
+.row .content {
+    margin-bottom: 20px;
+}
+
+.custom-row .content {
+    margin-bottom: 0px;
+}
+
+.content > .title {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.content > .description {
+    padding-top: 15px;
+    padding-bottom: 10px;
+    max-height: 150px;
+    margin-bottom: 0px;
+}
+
+.tag {
+    font-size: 85%;
+    font-weight: normal;
+    color: #444;
+    background-color: #eee;
+}
+
+.tag:hover {
+    color: #fff;
+    background-color: #428bca;
+}
+
+.content-footer {
+    height: 34px;
+}
+
+.content-footer > p {
+    display: none;
+}
+
+.hover > .content-footer > p {
+    display: block;
+}
+
+.content-footer .btn {
+    color: #0093cc;
+    border-color: #fff;
+    border: 0;
+}
+
+.content-footer .btn:hover {
+    color: #fff;
+    background-color: #0093cc;
+    border: 0;
+}
+
+
+
+
+.carousel {
+    margin-bottom: 10px;
+}
+
+.carousel-inner > .item {
+    height: 300px;
+    overflow: hidden;
+}
+
+.carousel-caption {
+    text-shadow: 3px 3px 3px rgba(0, 0, 0, 1);
+}
+
+
+
+
+.parsley-error-list {
+    padding-top: 10px;
+}
+
+
+.rating {
+    font-size: 24px;
+}
+
+
+
+
+
+/* Footer */
+
+#footer {
+    padding-top: 5px;
+    background-color: #f5f5f5;
+    height: 60px;
+}
+
+#footer > .container { 
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+#copyright {
+    padding: 15px;
+}
+
+
+
+
+
+.theater {
+    width: 90%;
+}
+
+.theater .seat {
+    float: left;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    padding: 4px;
+    margin: 0px;
+    width: 10%;
+    height: 50px;
+}
+
+.theater .seat-12 {
+    width: 8.33%;
+}
+
+.theater .seat .inner {
+    border-radius: 5px;
+    background-color: #4cae4c;
+    width: 100%;
+    height: 100%;
+    padding-top: 10px;
+}
+
+.theater .seat .taken {
+    background-color: rgb(213, 21, 21);
+}
+
+.theater .seat .selected {
+    background-color: #2D6A2D;
+}
+
+.theater .seat .innerlabel {
+    text-align: right;
+    font-weight: bold;
+    padding-top: 12px;
+}
+
+.theater .seat:last-of-type .innerlabel {
+    text-align: left;
+}
+
+.theater .seat-10 {
+    width: 10%;
+}
+
+
+
+@charset "UTF-8";
+/*
+ * jQuery File Upload Plugin CSS 1.3.0
+ * https://github.com/blueimp/jQuery-File-Upload
+ *
+ * Copyright 2013, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+
+.fileinput-button {
+  position: relative;
+  overflow: hidden;
+}
+.fileinput-button input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  opacity: 0;
+  -ms-filter: 'alpha(opacity=0)';
+  font-size: 200px;
+  direction: ltr;
+  cursor: pointer;
+}
+
+/* Fixes for IE < 8 */
+@media screen\9 {
+  .fileinput-button input {
+    filter: alpha(opacity=0);
+    font-size: 100%;
+    height: 100%;
+  }
+}

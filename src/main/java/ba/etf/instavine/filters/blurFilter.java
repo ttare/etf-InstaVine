@@ -7,6 +7,16 @@ import java.awt.geom.*;
 
 public abstract class ImageFilterBase implements BufferedImageOp {
 
+	private static final int[][] filter_matrix9 = { {1, 1, 1},
+											       {1, 1, 1},
+											       {1, 1, 1} };
+											
+    private static final int[][] filter_matrix16 = { {1, 2, 1},
+												    {2, 4, 2},
+                                                    {1, 2, 1} };
+
+
+
     public abstract BufferedImage applyFilter(BufferedImage src, BufferedImage dst);
 
     protected static BufferedImage toBufferedImage(Image img)
@@ -28,12 +38,55 @@ public abstract class ImageFilterBase implements BufferedImageOp {
         return bimage;
     }
 
-    public final BufferedImage filter(BufferedImage src, BufferedImage dst) {
+    public final BufferedImage filter(BufferedImage src, BufferedImage dst) { //iteration number bi mozda trebao biti parametar
         if (dst == null) 
             dst = createCompatibleDestImage (src, null);
+			
+			
+		int count = 0;
+		iterationNum = 1;
+        while (count < iterationNum) {
+            for (int y = 1; y + 1 < src.getHeight(); y++) {
+                for (int x = 1; x + 1 < src.getWidth(); x++) {
+                    Color tempColor = getFilteredValue(src, y, x, filter_matrix9); //filter_matrix9 ili filter_matrix16
+                    dst.setRGB(x, y, tempColor.getRGB());
+
+                }
+            }
+            count++;
+        }
+		
+		
         dst = applyFilter(src, dst);
         return dst;
     }
+	
+	private Color getFilteredValue(final BufferedImage src, int y, int x, int[][] filter) { //parametar filter je filter9 ili filter16 matrica
+        int r = 0, g = 0, b = 0;
+        for (int j = -1; j <= 1; j++) {
+            for (int k = -1; k <= 1; k++) {
+ 
+                r += (filter[1 + j][1 + k] * (new Color(src.getRGB(x + k, y + j))).getRed());
+                g += (filter[1 + j][1 + k] * (new Color(src.getRGB(x + k, y + j))).getGreen());
+                b += (filter[1 + j][1 + k] * (new Color(src.getRGB(x + k, y + j))).getBlue());
+            }
+        }
+        r = r / sum(filter);
+        g = g / sum(filter);
+        b = b / sum(filter);
+        return new Color(r, g, b);
+    }
+	
+	private int sum(int[][] filter) {
+        int sum = 0;
+        for (int y = 0; y < filter.length; y++) {
+            for (int x = 0; x < filter[y].length; x++) {
+                sum += filter[y][x];
+            }
+        }
+        return sum;
+    }	
+	
 
     public BufferedImage createCompatibleDestImage (BufferedImage src, ColorModel dst_color_model) { 
         if (dst_color_model == null) 
@@ -62,6 +115,4 @@ public abstract class ImageFilterBase implements BufferedImageOp {
     public final RenderingHints getRenderingHints () {
         return null;
     }
-    
-    
 }
